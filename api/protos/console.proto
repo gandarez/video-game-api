@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package gandarez.video_game_api.console;
+
+option go_package = "github.com/gandarez/video-game-api/pkg/grpc/console";
+
+service ConsoleService {
+  rpc GetConsole(GetConsoleRequest) returns (GetConsoleResponse);
+  rpc CreateConsole(CreateConsoleRequest) returns (CreateConsoleResponse);
+}
+
+message GetConsoleRequest {
+  string id = 1;
+}
+
+message GetConsoleResponse {
+  Console console = 1;
+}
+
+message CreateConsoleRequest {
+  string name = 1;
+  string manufacturer = 2;
+  string release_date = 3;
+}
+
+message CreateConsoleResponse {
+  Console console = 1;
+}
+
+message Console {
+  string id = 1;
+  string name = 2;
+  string manufacturer = 3;
+  string release_date = 4;
+}

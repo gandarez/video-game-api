@@ -1,0 +1,6 @@
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=database_name
+DATABASE_USER=username
+DATABASE_PASSWORD=password
+SERVICE_NAME=video-game-api

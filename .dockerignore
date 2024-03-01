@@ -1,0 +1,20 @@
+# Ignore everything
+**
+
+# Source files
+!/cmd/**
+!/internal/**
+!/pkg/**
+
+# integration test files
+!/test/**
+
+# db files
+!/db/**
+
+# Other files
+!.git
+!.env
+!go.mod
+!go.sum
+!Makefile

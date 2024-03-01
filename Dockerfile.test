@@ -1,0 +1,11 @@
+FROM golang:1.22-bullseye
+
+WORKDIR /src
+
+# Copy everything but defined in docker ignore file
+COPY . .
+
+# Download dependencies
+RUN go mod vendor
+
+CMD [ "go", "test", "-v", "-race", "-timeout=30s", "-tags=integration", "./test/integration_test/..." ]
