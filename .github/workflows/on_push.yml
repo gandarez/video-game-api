@@ -33,7 +33,10 @@ jobs:
         run: make test
       -
         name: Linter
-        run: make lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          skip-cache: true
       -
         name: Coverage
         uses: codecov/codecov-action@v3
@@ -85,7 +88,10 @@ jobs:
         run: make test
       -
         name: Linter
-        run: make lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          skip-cache: true
 
   test-integration-windows:
     name: Integration Tests Windows
@@ -131,7 +137,10 @@ jobs:
         run: make test
       -
         name: Linter
-        run: make lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          skip-cache: true
 
   test-integration-macos:
     name: Integration Tests macOS
