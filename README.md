@@ -3,5 +3,3 @@
 API to manage console, cartridges and other stuff related to video-games.
 
 ## Getting Started
-
-TODO
