@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type (
@@ -20,7 +21,7 @@ type (
 	// Connector wraps the basic database operations.
 	Connector interface {
 		Open(ctx context.Context) error
-		Close(ctx context.Context)
+		Close()
 		DBChecker
 		TransactionOpener
 		QueryExecutor
@@ -52,7 +53,7 @@ type (
 	// Client connects to the database.
 	Client struct {
 		ConnectionString string
-		conn             *pgx.Conn
+		pool             *pgxpool.Pool
 	}
 )
 
@@ -72,37 +73,37 @@ func NewClient(c Configuration) *Client {
 
 // Open opens a database connection.
 func (c *Client) Open(ctx context.Context) error {
-	if c.conn != nil {
-		if err := c.conn.Ping(ctx); err != nil {
+	if c.pool != nil {
+		if err := c.pool.Ping(ctx); err != nil {
 			return fmt.Errorf("failed to reach database: %w", err)
 		}
 
-		_ = c.conn.Close(ctx)
+		c.pool.Close()
 	}
 
-	conn, err := pgx.Connect(ctx, c.ConnectionString)
+	pool, err := pgxpool.New(ctx, c.ConnectionString)
 	if err != nil {
-		return fmt.Errorf("failed to connect to database: %w", err)
+		return fmt.Errorf("failed to connect to database: %s", err)
 	}
 
-	c.conn = conn
+	c.pool = pool
 
 	return nil
 }
 
 // Close closes a database connection.
-func (c *Client) Close(ctx context.Context) {
-	_ = c.conn.Close(ctx)
+func (c *Client) Close() {
+	c.pool.Close()
 }
 
 // Check pings the database.
 func (c *Client) Check(ctx context.Context) error {
-	return c.conn.Ping(ctx)
+	return c.pool.Ping(ctx)
 }
 
 // Begin begins a transaction.
 func (c *Client) Begin(ctx context.Context) (*Transaction, error) {
-	tx, err := c.conn.Begin(ctx)
+	tx, err := c.pool.Begin(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +115,7 @@ func (c *Client) Begin(ctx context.Context) (*Transaction, error) {
 
 // BeginTx begins a transaction with options.
 func (c *Client) BeginTx(ctx context.Context, txOptions TxOptions) (*Transaction, error) {
-	tx, err := c.conn.BeginTx(ctx, pgx.TxOptions{
+	tx, err := c.pool.BeginTx(ctx, pgx.TxOptions{
 		IsoLevel:       pgx.TxIsoLevel(txOptions.IsoLevel),
 		AccessMode:     pgx.TxAccessMode(txOptions.AccessMode),
 		DeferrableMode: pgx.TxDeferrableMode(txOptions.DeferrableMode),
@@ -134,22 +135,22 @@ func (c *Client) CopyFrom(
 	tableName pgx.Identifier,
 	columnNames []string,
 	rowSrc pgx.CopyFromSource) (int64, error) {
-	return c.conn.CopyFrom(ctx, tableName, columnNames, rowSrc)
+	return c.pool.CopyFrom(ctx, tableName, columnNames, rowSrc)
 }
 
 // Exec executes a SQL query.
 func (c *Client) Exec(ctx context.Context, sql string, args ...any) (int64, error) {
-	result, err := c.conn.Exec(ctx, sql, args...)
+	result, err := c.pool.Exec(ctx, sql, args...)
 
 	return result.RowsAffected(), err
 }
 
 // Query executes a query on the database and returns rows.
 func (c *Client) Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error) {
-	return c.conn.Query(ctx, sql, args...)
+	return c.pool.Query(ctx, sql, args...)
 }
 
 // QueryRow executes a query on the database and returns a single row.
 func (c *Client) QueryRow(ctx context.Context, sql string, args ...any) pgx.Row {
-	return c.conn.QueryRow(ctx, sql, args...)
+	return c.pool.QueryRow(ctx, sql, args...)
 }
