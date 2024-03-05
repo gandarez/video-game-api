@@ -134,10 +134,5 @@ func main() {
 	// shutdown gRPC server
 	grpcServer.GracefulStop()
 
-	// purge database
-	if err := dbmigration.Purge(db.ConnectionString); err != nil {
-		logger.Warn("failed to purge database", slog.Any("error", err))
-	}
-
 	logger.Info("server gracefully stopped")
 }
