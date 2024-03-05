@@ -28,7 +28,9 @@ func main() {
 	ctx := context.Background()
 
 	// Setup logger
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+	}))
 
 	// Load configuration from env vars.
 	cfg, err := config.Load(ctx, "./.env")
