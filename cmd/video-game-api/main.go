@@ -12,6 +12,9 @@ import (
 	"time"
 
 	dbmigration "github.com/gandarez/video-game-api/db"
+	redis "github.com/gandarez/video-game-api/internal/cache"
+	"github.com/gandarez/video-game-api/internal/client/igdb"
+	"github.com/gandarez/video-game-api/internal/client/twitch"
 	"github.com/gandarez/video-game-api/internal/config"
 	"github.com/gandarez/video-game-api/internal/database"
 	"github.com/gandarez/video-game-api/internal/grpc/middleware"
@@ -35,7 +38,7 @@ func main() {
 	// Load configuration from env vars.
 	cfg, err := config.Load(ctx, "./.env")
 	if err != nil {
-		logger.ErrorContext(ctx, "failed to load configuration", slog.Any("error", err))
+		logger.Error("failed to load configuration", slog.Any("error", err))
 
 		os.Exit(1)
 	}
@@ -51,21 +54,45 @@ func main() {
 
 	// Open database connection
 	if err = db.Open(ctx); err != nil {
-		logger.ErrorContext(ctx, "failed to open database connection", slog.Any("error", err))
+		logger.Error("failed to open database connection", slog.Any("error", err))
 
 		os.Exit(1)
 	}
 
 	// Run database migrations
 	if err = dbmigration.Run(db.ConnectionString, logger); err != nil {
-		logger.ErrorContext(ctx, err.Error())
+		logger.Error(err.Error())
 
 		os.Exit(1)
 	}
 
+	// create cache client
+	cacheClient := redis.NewClient(redis.Configuration{
+		Addr:     cfg.Redis.Host,
+		Password: cfg.Redis.Password,
+		DB:       cfg.Redis.DB,
+	})
+
+	// create Twitch client
+	twitchClient := twitch.NewClient(twitch.Config{
+		BaseURL:      cfg.VendorTwitch.Host,
+		Cache:        cacheClient,
+		CacheKey:     "twitch:token",
+		ClientID:     cfg.VendorTwitch.ClientID,
+		ClientSecret: cfg.VendorTwitch.ClientSecret,
+		Logger:       logger,
+	})
+
+	// create IGDB client
+	igdbClient := igdb.NewClient(igdb.Config{
+		BaseURL:      cfg.VendorIGDB.Host,
+		Logger:       logger,
+		TwitchClient: twitchClient,
+	})
+
 	// setup server
 	httpserver := server.New(cfg.Server.Port,
-		server.WithRecover(ctx, logger),
+		server.WithRecover(logger),
 		server.WithDecompress(),
 		server.WithGzip(),
 	)
@@ -73,6 +100,7 @@ func main() {
 	// add http routes
 	httpserver.AddRoute(handlerhttp.SearchConsoleByID(ctx, logger, db))
 	httpserver.AddRoute(handlerhttp.CreateConsole(ctx, logger, db))
+	httpserver.AddRoute(handlerhttp.SearchGameByName(ctx, logger, igdbClient))
 
 	// start httpserver
 	go func() {
@@ -84,14 +112,14 @@ func main() {
 	// setup gRPC server
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPC.Port))
 	if err != nil {
-		logger.ErrorContext(ctx, "failed to start listening: %s", err)
+		logger.Error("failed to start listening: %s", err)
 
 		os.Exit(1)
 	}
 
 	opts := []grpc.ServerOption{
-		middleware.WithPanicRecovery(ctx, logger),
-		middleware.WithUnknownServiceHandler(ctx, logger),
+		middleware.WithPanicRecovery(logger),
+		middleware.WithUnknownServiceHandler(logger),
 	}
 
 	// Create a gRPC server object
@@ -107,12 +135,12 @@ func main() {
 	// start gRPC server
 	go func() {
 		if err := grpcServer.Serve(lis); err != nil {
-			logger.ErrorContext(ctx, "failed to serve gRPC", slog.Any("error", err))
+			logger.Error("failed to serve gRPC", slog.Any("error", err))
 		}
 	}()
 
-	logger.InfoContext(ctx, "gRPC server listening", slog.String("addr", lis.Addr().String()))
-	logger.InfoContext(ctx, "http server started", slog.Int("port", cfg.Server.Port))
+	logger.Info("gRPC server listening", slog.String("addr", lis.Addr().String()))
+	logger.Info("http server started", slog.Int("port", cfg.Server.Port))
 
 	// wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
 	// Use a buffered channel to avoid missing signals as recommended for signal.Notify

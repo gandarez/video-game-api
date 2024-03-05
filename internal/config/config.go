@@ -12,10 +12,13 @@ import (
 type (
 	// Configuration contains loaded environment variables.
 	Configuration struct {
-		ServiceName string   `env:"SERVICE_NAME,required"`
-		Database    Database `env:",prefix=DATABASE_"`
-		GRPC        GRPC     `env:",prefix=GRPC_"`
-		Server      Server   `env:",prefix=SERVER_"`
+		ServiceName  string       `env:"SERVICE_NAME,required"`
+		Database     Database     `env:",prefix=DATABASE_"`
+		GRPC         GRPC         `env:",prefix=GRPC_"`
+		Redis        Redis        `env:",prefix=REDIS_"`
+		Server       Server       `env:",prefix=SERVER_"`
+		VendorIGDB   VendorIGDB   `env:",prefix=VENDOR_IGDB_"`
+		VendorTwitch VendorTwitch `env:",prefix=VENDOR_TWITCH_"`
 	}
 
 	// Database contains database environment variables.
@@ -33,10 +36,29 @@ type (
 		Port int `env:"PORT,default=17022"`
 	}
 
+	// Redis contains Redis environment variables.
+	Redis struct {
+		Host     string `env:"HOST,required"`
+		Password string `env:"PASSWORD"`
+		DB       int    `env:"DB,default=0"`
+	}
+
 	// Server contains server environment variables.
 	Server struct {
 		// Port is the port number to listen on.
 		Port int `env:"PORT,default=17020"`
+	}
+
+	// VendorIGDB contains IGDB service environment variables.
+	VendorIGDB struct {
+		Host string `env:"HOST,required"`
+	}
+
+	// VendorTwitch contains Twitch service environment variables.
+	VendorTwitch struct {
+		Host         string `env:"HOST,required"`
+		ClientID     string `env:"CLIENT_ID,required"`
+		ClientSecret string `env:"CLIENT_SECRET,required"`
 	}
 )
 

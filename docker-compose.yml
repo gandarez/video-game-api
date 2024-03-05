@@ -14,7 +14,12 @@ services:
       DATABASE_PASSWORD: postgres
       DATABASE_NAME: postgres
       DATABASE_SSL_MODE: disable
+      REDIS_HOST: redis
       SERVICE_NAME: video-game-api
+      VENDOR_IGDB_HOST: https://api.igdb.com/v4
+      VENDOR_TWITCH_HOST: https://id.twitch.tv
+      VENDOR_TWITCH_CLIENT_ID: /run/secrets/twitch_client_id
+      VENDOR_TWITCH_CLIENT_SECRET: /run/secrets/twitch_client_secret
     build:
       context: .
       dockerfile: Dockerfile
@@ -54,6 +59,18 @@ services:
       retries: 20
     networks:
       - video-game-api-network
+
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+secrets:
+   twitch_client_id:
+     file: ./secrets/twitch_client_id.txt
+   twitch_client_secret:
+     file: ./secrets/twitch_client_secret.txt
 
 networks:
   video-game-api-network:

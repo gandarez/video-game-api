@@ -1,7 +1,6 @@
 package http
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 
@@ -10,14 +9,14 @@ import (
 )
 
 // errorHandler handles error and returns a http status code and a response.
-func errorHandler(ctx context.Context, logger *slog.Logger, err error) (int, any) {
+func errorHandler(logger *slog.Logger, err error) (int, any) {
 	var httpcode int
 
 	res := model.ErrorResponse{
 		Errors: []string{err.Error()},
 	}
 
-	logger.ErrorContext(ctx, err.Error())
+	logger.Error(err.Error())
 
 	// assert error type.
 	switch errType := err.(type) {

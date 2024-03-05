@@ -1,7 +1,6 @@
 package grpc
 
 import (
-	"context"
 	"log/slog"
 
 	"github.com/gandarez/video-game-api/internal/database"
@@ -12,10 +11,10 @@ import (
 )
 
 // handleError handles error and returns a gRPC status error.
-func handleError[T any](ctx context.Context, logger *slog.Logger, err error) (*T, error) {
+func handleError[T any](logger *slog.Logger, err error) (*T, error) {
 	var code codes.Code
 
-	logger.ErrorContext(ctx, err.Error())
+	logger.Error(err.Error())
 
 	// assert error type.
 	switch err.(type) {

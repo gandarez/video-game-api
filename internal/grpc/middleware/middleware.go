@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"log/slog"
 	"runtime/debug"
 
@@ -13,12 +12,12 @@ import (
 )
 
 // WithPanicRecovery returns a new grpc.ServerOption that recovers from panics and logs them.
-func WithPanicRecovery(ctx context.Context, logger *slog.Logger) grpc.ServerOption {
+func WithPanicRecovery(logger *slog.Logger) grpc.ServerOption {
 	return grpc.UnaryInterceptor(
 		grpc_middleware.ChainUnaryServer(
 			grpc_recovery.UnaryServerInterceptor(
 				grpc_recovery.WithRecoveryHandler(func(p any) (err error) {
-					logger.ErrorContext(ctx, "service panicked",
+					logger.Error("service panicked",
 						slog.Any("error", err),
 						slog.String("stack", string(debug.Stack())),
 					)
@@ -31,11 +30,11 @@ func WithPanicRecovery(ctx context.Context, logger *slog.Logger) grpc.ServerOpti
 }
 
 // WithUnknownServiceHandler returns a new grpc.ServerOption that handles unknown routes.
-func WithUnknownServiceHandler(ctx context.Context, logger *slog.Logger) grpc.ServerOption {
+func WithUnknownServiceHandler(logger *slog.Logger) grpc.ServerOption {
 	return grpc.UnknownServiceHandler(func(_ any, stream grpc.ServerStream) error {
 		m, _ := grpc.MethodFromServerStream(stream)
 
-		logger.ErrorContext(ctx, "unknown method in request", slog.String("method", m))
+		logger.Error("unknown method in request", slog.String("method", m))
 
 		return status.Errorf(codes.Unimplemented, "unknown route")
 	})
