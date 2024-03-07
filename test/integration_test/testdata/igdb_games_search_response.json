@@ -1,0 +1,119 @@
+[
+    {
+        "id": 84920,
+        "name": "Super Mario All-Stars: Limited Edition",
+        "genres": [
+            "Platform",
+            "Arcade"
+        ],
+        "platforms": [
+            "Wii"
+        ],
+        "release_date": "2010-10-21"
+    },
+    {
+        "id": 132109,
+        "name": "Mario & Sonic at the Olympic Winter Games",
+        "genres": [
+            "Sport"
+        ],
+        "platforms": [
+            "Nintendo DS"
+        ],
+        "release_date": "2009-10-13"
+    },
+    {
+        "id": 2707,
+        "name": "Mario & Sonic at the Olympic Winter Games",
+        "genres": [
+            "Sport"
+        ],
+        "platforms": [
+            "Wii"
+        ],
+        "release_date": "2009-10-13"
+    },
+    {
+        "id": 3365,
+        "name": "Mario & Luigi: Dream Team",
+        "genres": [
+            "Puzzle",
+            "Role-playing (RPG)",
+            "Adventure"
+        ],
+        "platforms": [
+            "Nintendo 3DS"
+        ],
+        "release_date": "2013-07-12"
+    },
+    {
+        "id": 116795,
+        "name": "Mario & Sonic at the Olympic Games Tokyo 2020",
+        "genres": [
+            "Sport"
+        ],
+        "platforms": [
+            "Nintendo Switch"
+        ],
+        "release_date": "2019-11-01"
+    },
+    {
+        "id": 132110,
+        "name": "Mario & Sonic at the London 2012 Olympic Games",
+        "genres": [
+            "Sport"
+        ],
+        "platforms": [
+            "Nintendo 3DS"
+        ],
+        "release_date": "2012-02-09"
+    },
+    {
+        "id": 2708,
+        "name": "Mario & Sonic at the London 2012 Olympic Games",
+        "genres": [
+            "Sport"
+        ],
+        "platforms": [
+            "Wii"
+        ],
+        "release_date": "2011-11-15"
+    },
+    {
+        "id": 3990,
+        "name": "Mario & Sonic at the Sochi 2014 Olympic Winter Games",
+        "genres": [
+            "Sport"
+        ],
+        "platforms": [
+            "Wii U"
+        ],
+        "release_date": "2013-11-08"
+    },
+    {
+        "id": 11195,
+        "name": "Mario & Luigi: Paper Jam",
+        "genres": [
+            "Role-playing (RPG)",
+            "Adventure"
+        ],
+        "platforms": [
+            "Nintendo 3DS"
+        ],
+        "release_date": "2015-12-03"
+    },
+    {
+        "id": 3364,
+        "name": "Mario & Luigi: Partners in Time",
+        "genres": [
+            "Puzzle",
+            "Role-playing (RPG)",
+            "Adventure"
+        ],
+        "platforms": [
+            "Nintendo DS",
+            "Wii U"
+        ],
+        "release_date": "2005-11-28"
+    }
+]

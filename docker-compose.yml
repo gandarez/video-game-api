@@ -16,16 +16,20 @@ services:
       DATABASE_SSL_MODE: disable
       REDIS_HOST: redis
       SERVICE_NAME: video-game-api
-      VENDOR_IGDB_HOST: https://api.igdb.com/v4
-      VENDOR_TWITCH_HOST: https://id.twitch.tv
-      VENDOR_TWITCH_CLIENT_ID: /run/secrets/twitch_client_id
-      VENDOR_TWITCH_CLIENT_SECRET: /run/secrets/twitch_client_secret
+      VENDOR_IGDB_HOST: http://mock_igdb_service:1081
+      VENDOR_TWITCH_HOST: http://mock_twitch_service:1080
+      VENDOR_TWITCH_CLIENT_ID: client-id
+      VENDOR_TWITCH_CLIENT_SECRET: client-secret
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
       postgres-db:
         condition: service_healthy
+      mock_twitch_service:
+        condition: service_started
+      mock_igdb_service:
+        condition: service_started
     networks:
       - video-game-api-network
 
@@ -66,11 +70,31 @@ services:
     ports:
       - "6379:6379"
 
-secrets:
-   twitch_client_id:
-     file: ./secrets/twitch_client_id.txt
-   twitch_client_secret:
-     file: ./secrets/twitch_client_secret.txt
+  mock_twitch_service:
+    container_name: mock_twitch_service
+    image: mockserver/mockserver
+    ports:
+      - "1080:1080"
+    environment:
+      SERVER_PORT: 1080
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/twitch_expectations.json
+    volumes:
+      - $PWD/config/mock/:/config/
+    networks:
+      - video-game-api-network
+
+  mock_igdb_service:
+    container_name: mock_igdb_service
+    image: mockserver/mockserver
+    ports:
+      - "1081:1081"
+    environment:
+      SERVER_PORT: 1081
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/igdb_expectations.json
+    volumes:
+      - $PWD/config/mock/:/config/
+    networks:
+      - video-game-api-network
 
 networks:
   video-game-api-network:

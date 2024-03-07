@@ -1,0 +1,22 @@
+{
+    "httpRequest": {
+        "method": "POST",
+        "path": "/oauth2/token",
+        "body": {
+            "type": "STRING",
+            "value": "{client_id: 'client-id', client_secret: 'client-secret', grant_type: 'client_credentials'}"
+        },
+        "headers": {
+            "Accept": ["application/json"],
+            "Content-Type": ["multipart/form-data; boundary=.*"]
+        }
+    },
+    "httpResponse": {
+        "statusCode": 200,
+        "body": {
+            "access_token": "access-token",
+            "token_type": "bearer",
+            "expires_in": 3600
+        }
+    }
+}
