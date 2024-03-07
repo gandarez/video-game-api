@@ -1,6 +1,6 @@
 module github.com/gandarez/video-game-api
 
-go 1.21.5
+go 1.22
 
 require (
 	github.com/golang-migrate/migrate/v4 v4.17.0
@@ -9,6 +9,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/pashagolub/pgxmock/v3 v3.3.0
+	github.com/redis/go-redis/v9 v9.5.1
 	github.com/sethvargo/go-envconfig v1.0.0
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/grpc v1.62.0
@@ -29,7 +30,6 @@ require (
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/redis/go-redis/v9 v9.5.1 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
