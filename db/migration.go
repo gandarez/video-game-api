@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres" // nolint:blank-imports
-	_ "github.com/golang-migrate/migrate/v4/source/file"       // nolint:blank-imports
+	_ "github.com/golang-migrate/migrate/v4/database/postgres" // nolint:revive
+	_ "github.com/golang-migrate/migrate/v4/source/file"       // nolint:revive
 )
 
 // Run runs the database migrations.
