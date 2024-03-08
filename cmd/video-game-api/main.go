@@ -102,6 +102,10 @@ func main() {
 	httpserver.AddRoute(handlerhttp.CreateConsole(ctx, logger, db))
 	httpserver.AddRoute(handlerhttp.SearchGameByName(ctx, logger, igdbClient))
 
+	// Add default routes for health check
+	httpserver.AddRoute(server.ReadinessRoute())
+	httpserver.AddRoute(server.LivenessRoute())
+
 	// start httpserver
 	go func() {
 		if err := httpserver.Start(); err != http.ErrServerClosed {
