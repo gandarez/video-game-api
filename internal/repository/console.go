@@ -4,32 +4,27 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gandarez/video-game-api/internal/database"
 	"github.com/gandarez/video-game-api/internal/entity"
+
+	"github.com/jackc/pgx/v5"
 )
 
-//go:generate mockery --name ConsoleRepository --structname MockConsoleRepository --inpackage --case snake
 type (
-	// ConsoleRepository represents the repository for console.
-	ConsoleRepository interface {
-		FindByID(ctx context.Context, id string) (*entity.Console, error)
-		Save(ctx context.Context, console *entity.Console) error
+	DatabaseQueryExecutor interface {
+		Exec(ctx context.Context, sql string, args ...any) (int64, error)
+		QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
 	}
 
 	// Console is the repository for console.
 	Console struct {
-		db database.QueryExecutor
-		tx database.Transactioner
+		db DatabaseQueryExecutor
 	}
 )
 
-var _ ConsoleRepository = (*Console)(nil)
-
 // NewConsole creates a new console repository.
-func NewConsole(db database.QueryExecutor, tx database.Transactioner) ConsoleRepository {
+func NewConsole(db DatabaseQueryExecutor) *Console {
 	return &Console{
 		db: db,
-		tx: tx,
 	}
 }
 

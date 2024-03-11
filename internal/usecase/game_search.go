@@ -9,13 +9,22 @@ import (
 	"github.com/gandarez/video-game-api/internal/model"
 )
 
-// GameSearch is a use case for searching a game.
-type GameSearch struct {
-	igdbClient igdb.Igdb
-}
+type (
+	// GameSearch is a use case for searching a game.
+	GameSearch struct {
+		igdbClient IgdbGameFinder
+	}
+
+	// Igdb is an interface for IGDB client.
+	IgdbGameFinder interface {
+		Games(ctx context.Context, name string) ([]igdb.Game, error)
+		Genres(ctx context.Context, ids []int) ([]igdb.Genre, error)
+		Platforms(ctx context.Context, ids []int) ([]igdb.Platform, error)
+	}
+)
 
 // NewGameSearch creates a new game search use case.
-func NewGameSearch(igdbClient igdb.Igdb) *GameSearch {
+func NewGameSearch(igdbClient IgdbGameFinder) *GameSearch {
 	return &GameSearch{
 		igdbClient: igdbClient,
 	}

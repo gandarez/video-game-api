@@ -10,7 +10,6 @@ import (
 	"github.com/gandarez/video-game-api/internal/client/twitch"
 )
 
-//go:generate mockery --name Igdb --structname MockIgdbClient --inpackage --case snake
 type (
 	// Client communicates with the igdb api.
 	Client struct {
@@ -38,13 +37,6 @@ type (
 		BaseURL      string
 		Logger       *slog.Logger
 		TwitchClient *twitch.Client
-	}
-
-	// Igdb is the interface for the igdb client.
-	Igdb interface {
-		Games(ctx context.Context, criteria string) ([]Game, error)
-		Genres(ctx context.Context, ids []int) ([]Genre, error)
-		Platforms(ctx context.Context, ids []int) ([]Platform, error)
 	}
 )
 

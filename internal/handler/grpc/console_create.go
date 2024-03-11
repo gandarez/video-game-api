@@ -17,7 +17,7 @@ func (s *ConsoleServer) CreateConsole(
 	s.logger.Info("create console")
 
 	uc := usecase.NewConsoleCreate(
-		repository.NewConsole(s.db, nil),
+		repository.NewConsole(s.db),
 	)
 
 	input := model.ConsoleInsert{

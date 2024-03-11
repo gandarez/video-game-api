@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/gandarez/video-game-api/internal/database"
 	"github.com/gandarez/video-game-api/internal/repository"
 	"github.com/gandarez/video-game-api/internal/server"
 	"github.com/gandarez/video-game-api/internal/usecase"
@@ -14,7 +13,7 @@ import (
 )
 
 // SearchConsoleByID returns a console by id.
-func SearchConsoleByID(ctx context.Context, logger *slog.Logger, db database.Connector) server.Route {
+func SearchConsoleByID(ctx context.Context, logger *slog.Logger, db repository.DatabaseQueryExecutor) server.Route {
 	return server.Route{
 		Method: "GET",
 		Path:   "/consoles/:id",
@@ -24,7 +23,7 @@ func SearchConsoleByID(ctx context.Context, logger *slog.Logger, db database.Con
 			id := c.Param("id")
 
 			uc := usecase.NewConsoleSearch(
-				repository.NewConsole(db, nil),
+				repository.NewConsole(db),
 			)
 
 			console, err := uc.Search(ctx, id)

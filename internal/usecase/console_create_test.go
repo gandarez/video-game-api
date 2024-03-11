@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/gandarez/video-game-api/internal/model"
-	"github.com/gandarez/video-game-api/internal/repository"
 	"github.com/gandarez/video-game-api/internal/usecase"
 
 	"github.com/stretchr/testify/assert"
@@ -64,9 +63,9 @@ func TestConsoleCreate_Repository_Err(t *testing.T) {
 }
 
 func setupConsoleCreateTest(t *testing.T) (
-	*repository.MockConsoleRepository,
+	*usecase.MockConsoleRepositoryCreator,
 	*usecase.ConsoleCreate) {
-	repo := repository.NewMockConsoleRepository(t)
+	repo := usecase.NewMockConsoleRepositoryCreator(t)
 
 	return repo, usecase.NewConsoleCreate(repo)
 }

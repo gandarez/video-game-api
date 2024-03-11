@@ -15,7 +15,7 @@ import (
 )
 
 func TestConsoleFindByID(t *testing.T) {
-	db, _, conn, teardown := setupTestDb(t)
+	db, conn, teardown := setupTestDb(t)
 	defer teardown()
 
 	releaseDate, err := time.Parse(time.DateOnly, "2020-11-12")
@@ -40,7 +40,7 @@ func TestConsoleFindByID(t *testing.T) {
 		).
 		Times(1)
 
-	repo := repository.NewConsole(db, nil)
+	repo := repository.NewConsole(db)
 
 	console, err := repo.FindByID(context.Background(), result.ID.String())
 	require.NoError(t, err)
@@ -49,7 +49,7 @@ func TestConsoleFindByID(t *testing.T) {
 }
 
 func TestConsoleSave(t *testing.T) {
-	db, _, conn, teardown := setupTestDb(t)
+	db, conn, teardown := setupTestDb(t)
 	defer teardown()
 
 	releaseDate, err := time.Parse(time.DateOnly, "2020-11-12")
@@ -75,14 +75,14 @@ func TestConsoleSave(t *testing.T) {
 		WillReturnResult(pgxmock.NewResult("INSERT", 1)).
 		Times(1)
 
-	repo := repository.NewConsole(db, nil)
+	repo := repository.NewConsole(db)
 
 	err = repo.Save(context.Background(), entity)
 	assert.NoError(t, err)
 }
 
 func TestConsoleSave_NoneAffected(t *testing.T) {
-	db, _, conn, teardown := setupTestDb(t)
+	db, conn, teardown := setupTestDb(t)
 	defer teardown()
 
 	conn.
@@ -98,7 +98,7 @@ func TestConsoleSave_NoneAffected(t *testing.T) {
 		WillReturnResult(pgxmock.NewResult("INSERT", 0)).
 		Times(1)
 
-	repo := repository.NewConsole(db, nil)
+	repo := repository.NewConsole(db)
 
 	err := repo.Save(context.Background(), &entity.Console{})
 
@@ -106,7 +106,7 @@ func TestConsoleSave_NoneAffected(t *testing.T) {
 }
 
 func TestConsoleSave_MultipleAffected(t *testing.T) {
-	db, _, conn, teardown := setupTestDb(t)
+	db, conn, teardown := setupTestDb(t)
 	defer teardown()
 
 	conn.
@@ -122,7 +122,7 @@ func TestConsoleSave_MultipleAffected(t *testing.T) {
 		WillReturnResult(pgxmock.NewResult("INSERT", 2)).
 		Times(1)
 
-	repo := repository.NewConsole(db, nil)
+	repo := repository.NewConsole(db)
 
 	err := repo.Save(context.Background(), &entity.Console{})
 

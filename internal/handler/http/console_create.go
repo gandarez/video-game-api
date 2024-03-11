@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/gandarez/video-game-api/internal/database"
 	"github.com/gandarez/video-game-api/internal/model"
 	"github.com/gandarez/video-game-api/internal/repository"
 	"github.com/gandarez/video-game-api/internal/server"
@@ -15,7 +14,7 @@ import (
 )
 
 // CreateConsole creates a new console.
-func CreateConsole(ctx context.Context, logger *slog.Logger, db database.Connector) server.Route {
+func CreateConsole(ctx context.Context, logger *slog.Logger, db repository.DatabaseQueryExecutor) server.Route {
 	return server.Route{
 		Method: "POST",
 		Path:   "/consoles",
@@ -29,7 +28,7 @@ func CreateConsole(ctx context.Context, logger *slog.Logger, db database.Connect
 			}
 
 			uc := usecase.NewConsoleCreate(
-				repository.NewConsole(db, nil),
+				repository.NewConsole(db),
 			)
 
 			console, err := uc.Create(ctx, body)

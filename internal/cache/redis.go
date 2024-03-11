@@ -9,12 +9,6 @@ import (
 )
 
 type (
-	// Cache is the interface that wraps the basic Set and Get methods.
-	Cache interface {
-		Set(ctx context.Context, key string, value any, expiration time.Duration) error
-		Get(ctx context.Context, key string) (string, error)
-	}
-
 	// Client is the redis client.
 	Client struct {
 		rc *redisClient.Client
@@ -29,7 +23,7 @@ type (
 )
 
 // NewClient creates a new redis client.
-func NewClient(cfg Configuration) Cache {
+func NewClient(cfg Configuration) *Client {
 	c := redisClient.NewClient(&redisClient.Options{
 		Addr:     cfg.Addr,
 		Password: cfg.Password,

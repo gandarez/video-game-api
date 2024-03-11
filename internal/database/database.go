@@ -18,46 +18,12 @@ type (
 		Port     int
 	}
 
-	// Connector wraps the basic database operations.
-	Connector interface {
-		Open(ctx context.Context) error
-		Close()
-		DBChecker
-		TransactionOpener
-		QueryExecutor
-	}
-
-	// DBChecker checks if the database is healthy.
-	DBChecker interface {
-		Check(ctx context.Context) error
-	}
-
-	// QueryExecutor executes queries on the database.
-	QueryExecutor interface {
-		CopyFrom(
-			ctx context.Context,
-			tableName pgx.Identifier,
-			columnNames []string,
-			rowSrc pgx.CopyFromSource) (int64, error)
-		Exec(ctx context.Context, sql string, args ...any) (int64, error)
-		Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
-		QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
-	}
-
-	// TransactionOpener opens transactions on the database.
-	TransactionOpener interface {
-		Begin(ctx context.Context) (*Transaction, error)
-		BeginTx(ctx context.Context, txOptions TxOptions) (*Transaction, error)
-	}
-
 	// Client connects to the database.
 	Client struct {
 		ConnectionString string
 		pool             *pgxpool.Pool
 	}
 )
-
-var _ Connector = (*Client)(nil)
 
 // NewClient creates a database client.
 func NewClient(c Configuration) *Client {

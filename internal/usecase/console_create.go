@@ -6,18 +6,25 @@ import (
 
 	"github.com/gandarez/video-game-api/internal/entity"
 	"github.com/gandarez/video-game-api/internal/model"
-	"github.com/gandarez/video-game-api/internal/repository"
 
 	"github.com/google/uuid"
 )
 
-// ConsoleCreate is a use case for creating a console.
-type ConsoleCreate struct {
-	repo repository.ConsoleRepository
-}
+//go:generate mockery --name ConsoleRepositoryCreator --structname MockConsoleRepositoryCreator --inpackage --case snake
+type (
+	// ConsoleRepositoryCreator is an interface for creating a console in the repository.
+	ConsoleRepositoryCreator interface {
+		Save(ctx context.Context, console *entity.Console) error
+	}
+
+	// ConsoleCreate is a use case for creating a console.
+	ConsoleCreate struct {
+		repo ConsoleRepositoryCreator
+	}
+)
 
 // NewConsoleCreate creates a new console create use case.
-func NewConsoleCreate(repo repository.ConsoleRepository) *ConsoleCreate {
+func NewConsoleCreate(repo ConsoleRepositoryCreator) *ConsoleCreate {
 	return &ConsoleCreate{
 		repo: repo,
 	}

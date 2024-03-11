@@ -4,17 +4,21 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/gandarez/video-game-api/internal/api"
-	redis "github.com/gandarez/video-game-api/internal/cache"
 )
 
-//go:generate mockery --name Twitch --structname MockTwitchClient --inpackage --case snake
 type (
+	Cache interface {
+		Get(ctx context.Context, key string) (string, error)
+		Set(ctx context.Context, key string, value any, expiration time.Duration) error
+	}
+
 	// Client communicates with the Twitch api.
 	Client struct {
 		baseURL      string
-		cache        redis.Cache
+		cache        Cache
 		cacheKey     string
 		client       *api.Client
 		clientID     string
@@ -38,7 +42,7 @@ type (
 	// Config contains celcoin client configurations.
 	Config struct {
 		BaseURL      string
-		Cache        redis.Cache
+		Cache        Cache
 		CacheKey     string
 		ClientID     string
 		ClientSecret string

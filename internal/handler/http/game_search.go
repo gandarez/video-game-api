@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/gandarez/video-game-api/internal/client/igdb"
 	"github.com/gandarez/video-game-api/internal/server"
 	"github.com/gandarez/video-game-api/internal/usecase"
 
@@ -13,7 +12,7 @@ import (
 )
 
 // SearchGameByName returns a list of games that match the given name.
-func SearchGameByName(ctx context.Context, logger *slog.Logger, igdbClient igdb.Igdb) server.Route {
+func SearchGameByName(ctx context.Context, logger *slog.Logger, igdbClient usecase.IgdbGameFinder) server.Route {
 	return server.Route{
 		Method: "GET",
 		Path:   "/games/:name",

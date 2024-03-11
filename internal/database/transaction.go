@@ -7,13 +7,6 @@ import (
 )
 
 type (
-	// Transactioner represents a database transaction.
-	Transactioner interface {
-		Commit(ctx context.Context) error
-		Rollback(ctx context.Context) error
-		QueryExecutor
-	}
-
 	// Transaction represents a database transaction.
 	Transaction struct {
 		tx pgx.Tx
@@ -35,8 +28,6 @@ type (
 	// TxDeferrableMode is the transaction deferrable mode (deferrable or not deferrable).
 	TxDeferrableMode string
 )
-
-var _ Transactioner = (*Transaction)(nil)
 
 // Transaction isolation levels.
 const (

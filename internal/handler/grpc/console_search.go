@@ -16,7 +16,7 @@ func (s *ConsoleServer) GetConsole(
 	s.logger.Info("search console by id")
 
 	uc := usecase.NewConsoleSearch(
-		repository.NewConsole(s.db, nil),
+		repository.NewConsole(s.db),
 	)
 
 	console, err := uc.Search(ctx, in.GetId())

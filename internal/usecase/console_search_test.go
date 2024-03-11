@@ -8,7 +8,6 @@ import (
 
 	"github.com/gandarez/video-game-api/internal/entity"
 	"github.com/gandarez/video-game-api/internal/model"
-	"github.com/gandarez/video-game-api/internal/repository"
 	"github.com/gandarez/video-game-api/internal/usecase"
 
 	"github.com/google/uuid"
@@ -80,9 +79,9 @@ func TestConsoleSearch_Repository_Err(t *testing.T) {
 }
 
 func setupConsoleSearchTest(t *testing.T) (
-	*repository.MockConsoleRepository,
+	*usecase.MockConsoleRepositoryFinder,
 	*usecase.ConsoleSearch) {
-	repo := repository.NewMockConsoleRepository(t)
+	repo := usecase.NewMockConsoleRepositoryFinder(t)
 
 	return repo, usecase.NewConsoleSearch(repo)
 }

@@ -7,18 +7,25 @@ import (
 
 	"github.com/gandarez/video-game-api/internal/entity"
 	"github.com/gandarez/video-game-api/internal/model"
-	"github.com/gandarez/video-game-api/internal/repository"
 
 	"github.com/google/uuid"
 )
 
-// ConsoleSearch is a use case for searching a console.
-type ConsoleSearch struct {
-	repo repository.ConsoleRepository
-}
+//go:generate mockery --name ConsoleRepositoryFinder --structname MockConsoleRepositoryFinder --inpackage --case snake
+type (
+	// ConsoleRepositoryFinder is an interface for finding a console from the repository.
+	ConsoleRepositoryFinder interface {
+		FindByID(ctx context.Context, id string) (*entity.Console, error)
+	}
+
+	// ConsoleSearch is a use case for searching a console.
+	ConsoleSearch struct {
+		repo ConsoleRepositoryFinder
+	}
+)
 
 // NewConsoleSearch creates a new console search use case.
-func NewConsoleSearch(repo repository.ConsoleRepository) *ConsoleSearch {
+func NewConsoleSearch(repo ConsoleRepositoryFinder) *ConsoleSearch {
 	return &ConsoleSearch{
 		repo: repo,
 	}
