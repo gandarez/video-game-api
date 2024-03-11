@@ -44,10 +44,10 @@ func TestAuthenticate(t *testing.T) {
 	client := twitch.NewClient(twitch.Config{
 		BaseURL: url,
 		Cache: &mockCache{
-			GetFn: func(ctx context.Context, key string) (string, error) {
+			GetFn: func(_ context.Context, _ string) (string, error) {
 				return "", nil
 			},
-			SetFn: func(ctx context.Context, key string, value any, expiration time.Duration) error {
+			SetFn: func(_ context.Context, _ string, _ any, _ time.Duration) error {
 				return nil
 			},
 		},
@@ -67,10 +67,10 @@ func TestAuthenticate_Cached(t *testing.T) {
 	client := twitch.NewClient(twitch.Config{
 		BaseURL: url,
 		Cache: &mockCache{
-			GetFn: func(ctx context.Context, key string) (string, error) {
+			GetFn: func(_ context.Context, _ string) (string, error) {
 				return "access-token", nil
 			},
-			SetFn: func(ctx context.Context, key string, value any, expiration time.Duration) error {
+			SetFn: func(_ context.Context, _ string, _ any, _ time.Duration) error {
 				return nil
 			},
 		},
@@ -111,10 +111,10 @@ func TestAuthenticate_MalformedRespnse(t *testing.T) {
 	client := twitch.NewClient(twitch.Config{
 		BaseURL: url,
 		Cache: &mockCache{
-			GetFn: func(ctx context.Context, key string) (string, error) {
+			GetFn: func(_ context.Context, _ string) (string, error) {
 				return "", nil
 			},
-			SetFn: func(ctx context.Context, key string, value any, expiration time.Duration) error {
+			SetFn: func(_ context.Context, _ string, _ any, _ time.Duration) error {
 				return nil
 			},
 		},
@@ -122,7 +122,11 @@ func TestAuthenticate_MalformedRespnse(t *testing.T) {
 
 	_, err := client.Authenticate(context.Background())
 
-	assert.EqualError(t, err, `failed to parse results from: failed to parse json response body: invalid character 'i' looking for beginning of value. body: "invalid"`)
+	assert.EqualError(
+		t,
+		err,
+		`failed to parse results from: failed to parse json response body: invalid character 'i' looking for beginning of value. body: "invalid"`, // nolint:revive
+	)
 }
 
 func setupTestServer() (string, *http.ServeMux, func()) {

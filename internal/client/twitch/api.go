@@ -10,6 +10,7 @@ import (
 )
 
 type (
+	// Cache interface for caching.
 	Cache interface {
 		Get(ctx context.Context, key string) (string, error)
 		Set(ctx context.Context, key string, value any, expiration time.Duration) error

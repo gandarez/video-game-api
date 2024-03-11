@@ -15,7 +15,7 @@ type (
 		igdbClient IgdbGameFinder
 	}
 
-	// Igdb is an interface for IGDB client.
+	// IgdbGameFinder is an interface for finding games from IGDB.
 	IgdbGameFinder interface {
 		Games(ctx context.Context, name string) ([]igdb.Game, error)
 		Genres(ctx context.Context, ids []int) ([]igdb.Genre, error)

@@ -47,7 +47,7 @@ func TestClient_Games(t *testing.T) {
 	c := igdb.NewClient(igdb.Config{
 		BaseURL: url,
 		TwitchClient: &mockTwitchClient{
-			AuthenticateFn: func(ctx context.Context) (string, error) {
+			AuthenticateFn: func(_ context.Context) (string, error) {
 				return "access-token", nil
 			},
 			ClientIDFn: func() string {

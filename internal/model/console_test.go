@@ -1,14 +1,16 @@
-package model
+package model_test
 
 import (
 	"testing"
+
+	"github.com/gandarez/video-game-api/internal/model"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestConsoleInsertValidate(t *testing.T) {
-	insert := ConsoleInsert{
+	insert := model.ConsoleInsert{
 		Name:         "PlayStation 5",
 		Manufacturer: "Sony",
 		ReleaseDate:  "2020-11-12",
@@ -19,14 +21,14 @@ func TestConsoleInsertValidate(t *testing.T) {
 }
 
 func TestConsoleInsertValidate_NameRequired(t *testing.T) {
-	insert := ConsoleInsert{
+	insert := model.ConsoleInsert{
 		Manufacturer: "Sony",
 		ReleaseDate:  "2020-11-12",
 	}
 
 	err := insert.Validate()
 
-	errResponse, ok := err.(ErrorResponse)
+	errResponse, ok := err.(model.ErrorResponse)
 	require.True(t, ok)
 
 	require.Len(t, errResponse.Errors, 1)
@@ -34,7 +36,7 @@ func TestConsoleInsertValidate_NameRequired(t *testing.T) {
 }
 
 func TestConsoleInsertValidate_NameTooLong(t *testing.T) {
-	insert := ConsoleInsert{
+	insert := model.ConsoleInsert{
 		Name:         "name too long name too long name too long name too long",
 		Manufacturer: "Sony",
 		ReleaseDate:  "2020-11-12",
@@ -42,7 +44,7 @@ func TestConsoleInsertValidate_NameTooLong(t *testing.T) {
 
 	err := insert.Validate()
 
-	errResponse, ok := err.(ErrorResponse)
+	errResponse, ok := err.(model.ErrorResponse)
 	require.True(t, ok)
 
 	require.Len(t, errResponse.Errors, 1)
@@ -50,14 +52,14 @@ func TestConsoleInsertValidate_NameTooLong(t *testing.T) {
 }
 
 func TestConsoleInsertValidate_ManufacturerRequired(t *testing.T) {
-	insert := ConsoleInsert{
+	insert := model.ConsoleInsert{
 		Name:        "PlayStation 5",
 		ReleaseDate: "2020-11-12",
 	}
 
 	err := insert.Validate()
 
-	errResponse, ok := err.(ErrorResponse)
+	errResponse, ok := err.(model.ErrorResponse)
 	require.True(t, ok)
 
 	require.Len(t, errResponse.Errors, 1)
@@ -65,7 +67,7 @@ func TestConsoleInsertValidate_ManufacturerRequired(t *testing.T) {
 }
 
 func TestConsoleInsertValidate_ManufacturerTooLong(t *testing.T) {
-	insert := ConsoleInsert{
+	insert := model.ConsoleInsert{
 		Name:         "PlayStation 5",
 		Manufacturer: "manufacturer too long manufacturer too long manufacturer",
 		ReleaseDate:  "2020-11-12",
@@ -73,7 +75,7 @@ func TestConsoleInsertValidate_ManufacturerTooLong(t *testing.T) {
 
 	err := insert.Validate()
 
-	errResponse, ok := err.(ErrorResponse)
+	errResponse, ok := err.(model.ErrorResponse)
 	require.True(t, ok)
 
 	require.Len(t, errResponse.Errors, 1)
@@ -81,14 +83,14 @@ func TestConsoleInsertValidate_ManufacturerTooLong(t *testing.T) {
 }
 
 func TestConsoleInsertValidate_ReleaseDateRequired(t *testing.T) {
-	insert := ConsoleInsert{
+	insert := model.ConsoleInsert{
 		Name:         "PlayStation 5",
 		Manufacturer: "Sony",
 	}
 
 	err := insert.Validate()
 
-	errResponse, ok := err.(ErrorResponse)
+	errResponse, ok := err.(model.ErrorResponse)
 	require.True(t, ok)
 
 	require.Len(t, errResponse.Errors, 1)
@@ -96,7 +98,7 @@ func TestConsoleInsertValidate_ReleaseDateRequired(t *testing.T) {
 }
 
 func TestConsoleInsertValidate_ReleaseDateInvalid(t *testing.T) {
-	insert := ConsoleInsert{
+	insert := model.ConsoleInsert{
 		Name:         "PlayStation 5",
 		Manufacturer: "Sony",
 		ReleaseDate:  "invalid date",
@@ -104,7 +106,7 @@ func TestConsoleInsertValidate_ReleaseDateInvalid(t *testing.T) {
 
 	err := insert.Validate()
 
-	errResponse, ok := err.(ErrorResponse)
+	errResponse, ok := err.(model.ErrorResponse)
 	require.True(t, ok)
 
 	require.Len(t, errResponse.Errors, 1)

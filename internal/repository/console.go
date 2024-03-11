@@ -10,6 +10,7 @@ import (
 )
 
 type (
+	// DatabaseQueryExecutor is the interface for executing database queries.
 	DatabaseQueryExecutor interface {
 		Exec(ctx context.Context, sql string, args ...any) (int64, error)
 		QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
