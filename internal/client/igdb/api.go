@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/gandarez/video-game-api/internal/api"
-	"github.com/gandarez/video-game-api/internal/client/twitch"
 )
 
 type (
@@ -16,7 +15,7 @@ type (
 		baseURL      string
 		client       *api.Client
 		logger       *slog.Logger
-		twitchClient *twitch.Client
+		twitchClient TwitchClient
 		// doFunc allows api client options to manipulate request/response handling.
 		// default function will be set in constructor.
 		//
@@ -36,7 +35,13 @@ type (
 	Config struct {
 		BaseURL      string
 		Logger       *slog.Logger
-		TwitchClient *twitch.Client
+		TwitchClient TwitchClient
+	}
+
+	// TwitchClient is the interface for the Twitch client.
+	TwitchClient interface {
+		Authenticate(ctx context.Context) (string, error)
+		ClientID() string
 	}
 )
 

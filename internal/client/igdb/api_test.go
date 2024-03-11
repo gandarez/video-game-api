@@ -1,19 +1,33 @@
 package igdb_test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 )
 
-func setupTestServer() (string, *http.ServeMux, string, *http.ServeMux, func()) {
+func setupTestServer() (string, *http.ServeMux, func()) {
 	router := http.NewServeMux()
 	srv := httptest.NewServer(router)
 
-	routerTwitch := http.NewServeMux()
-	srvTwitch := httptest.NewServer(routerTwitch)
-
-	return srv.URL, router, srvTwitch.URL, routerTwitch, func() {
+	return srv.URL, router, func() {
 		srv.Close()
-		srvTwitch.Close()
 	}
+}
+
+type mockTwitchClient struct {
+	AuthenticateFn      func(ctx context.Context) (string, error)
+	AuthenticateFnCount int
+	ClientIDFn          func() string
+	ClientIDFnCount     int
+}
+
+func (m *mockTwitchClient) Authenticate(ctx context.Context) (string, error) {
+	m.AuthenticateFnCount++
+	return m.AuthenticateFn(ctx)
+}
+
+func (m *mockTwitchClient) ClientID() string {
+	m.ClientIDFnCount++
+	return m.ClientIDFn()
 }

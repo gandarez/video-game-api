@@ -1,47 +1,65 @@
 package igdb_test
 
 import (
-	// "context"
-	// "io"
-	// "net/http"
-	// "os"
+	"context"
+	"io"
+	"net/http"
+	"os"
 	"testing"
-	// "time"
-	// "github.com/gandarez/video-game-api/internal/api"
-	// "github.com/stretchr/testify/assert"
-	// "github.com/stretchr/testify/require"
+	"time"
+
+	"github.com/gandarez/video-game-api/internal/client/igdb"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestClient_Games(t *testing.T) {
-	// testServerURL, router, testTwitchURL, routerTwitch, tearDown := setupTestServer()
-	// defer tearDown()
+	url, router, tearDown := setupTestServer()
+	defer tearDown()
 
-	// var numCalls int
+	var numCalls int
 
-	// router.HandleFunc(
-	// 	"/Games/Mario", func(w http.ResponseWriter, req *http.Request) {
-	// 		numCalls++
+	router.HandleFunc(
+		"/games", func(w http.ResponseWriter, req *http.Request) {
+			numCalls++
 
-	// 		// check request
-	// 		assert.Equal(t, http.MethodPost, req.Method)
-	// 		assert.Equal(t, []string{"application/json"}, req.Header["Accept"])
-	// 		assert.Equal(t, []string{"application/json"}, req.Header["Content-Type"])
+			// check request
+			assert.Equal(t, http.MethodPost, req.Method)
+			assert.Equal(t, []string{"application/json"}, req.Header["Accept"])
+			assert.Equal(t, []string{"application/json"}, req.Header["Content-Type"])
 
-	// 		// write response
-	// 		f, err := os.Open("testdata/api_goals_id_response.json")
-	// 		require.NoError(t, err)
+			// check body
+			body, err := io.ReadAll(req.Body)
+			require.NoError(t, err)
 
-	// 		w.WriteHeader(http.StatusOK)
-	// 		_, err = io.Copy(w, f)
-	// 		require.NoError(t, err)
-	// 	})
+			assert.Equal(t, "fields first_release_date,name,slug,summary,genres,platforms; search \"Mario\";", string(body))
 
-	// c := api.NewClient(api.Config{BaseURL: testServerURL})
-	// goal, err := c.Games(context.Background(), "Mario")
+			// write response
+			f, err := os.Open("testdata/igdb_games_response.json")
+			require.NoError(t, err)
 
-	// require.NoError(t, err)
+			w.WriteHeader(http.StatusOK)
+			_, err = io.Copy(w, f)
+			require.NoError(t, err)
+		})
 
-	// assert.Equal(t, "3 hrs 23 mins", goal.Data.ChartData[len(goal.Data.ChartData)-1].ActualSecondsText)
+	c := igdb.NewClient(igdb.Config{
+		BaseURL: url,
+		TwitchClient: &mockTwitchClient{
+			AuthenticateFn: func(ctx context.Context) (string, error) {
+				return "access-token", nil
+			},
+			ClientIDFn: func() string {
+				return "client-id"
+			},
+		},
+	})
 
-	// assert.Eventually(t, func() bool { return numCalls == 1 }, time.Second, 50*time.Millisecond)
+	games, err := c.Games(context.Background(), "Mario")
+	require.NoError(t, err)
+
+	assert.Len(t, games, 10)
+
+	assert.Eventually(t, func() bool { return numCalls == 1 }, time.Second, 50*time.Millisecond)
 }
