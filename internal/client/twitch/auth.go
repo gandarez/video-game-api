@@ -81,8 +81,11 @@ func (c *Client) Authenticate(ctx context.Context) (string, error) {
 		return "", fmt.Errorf("failed to parse results from: %w", err)
 	}
 
-	if err := c.cache.Set(ctx, c.cacheKey, result.AccessToken, time.Duration(result.ExpiresIn)*time.Second); err != nil {
+	err = c.cache.Set(ctx, c.cacheKey, result.AccessToken, time.Duration(result.ExpiresIn)*time.Second)
+	if err != nil {
 		c.logger.Error("failed to cache authorization token", slog.Any("error", err))
+	} else {
+		c.logger.Info("authorization token cached")
 	}
 
 	return result.AccessToken, nil
