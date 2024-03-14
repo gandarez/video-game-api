@@ -3,6 +3,7 @@ package twitch_test
 import (
 	"context"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -51,6 +52,7 @@ func TestAuthenticate(t *testing.T) {
 				return nil
 			},
 		},
+		Logger: slog.Default(),
 	})
 
 	token, err := client.Authenticate(context.Background())

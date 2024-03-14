@@ -36,7 +36,7 @@ func NewClient(cfg Configuration) *Client {
 // Set saves a key/value pair on cache.
 func (c *Client) Set(ctx context.Context, key string, value any, expiration time.Duration) error {
 	if err := c.rc.Set(ctx, key, value, expiration); err != nil {
-		return fmt.Errorf("failed to set cache: %w", err.Err())
+		return fmt.Errorf("failed to set cache: %s", err.Err())
 	}
 
 	return nil
