@@ -116,7 +116,7 @@ func main() {
 	// setup gRPC server
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPC.Port))
 	if err != nil {
-		logger.Error("failed to start listening: %s", err)
+		logger.Error("failed to start listening: %s", slog.Any("error", err))
 
 		os.Exit(1)
 	}
