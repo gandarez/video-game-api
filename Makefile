@@ -61,7 +61,7 @@ test:
 
 .PHONY: test-integration
 test-integration:
-	docker-compose down && docker-compose run --build --rm integration-test && docker-compose down
+	docker compose down && docker compose run --build --rm integration-test && docker compose down
 
 .PHONY: gen.go
 gen.go:
