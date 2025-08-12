@@ -13,9 +13,9 @@ type (
 
 	// ConsoleInsert represents the console model request.
 	ConsoleInsert struct {
-		Name         string `json:"name"`
-		Manufacturer string `json:"manufacturer"`
-		ReleaseDate  string `json:"release_date"`
+		Name         string `json:"name" jsonschema:"required,description=The name of the console"`
+		Manufacturer string `json:"manufacturer" jsonschema:"required,description=The manufacturer of the console"`
+		ReleaseDate  string `json:"release_date" jsonschema:"required,description=The release date of the console"`
 	}
 )
 

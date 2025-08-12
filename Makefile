@@ -41,6 +41,10 @@ build-linux-amd64:
 build-windows-amd64:
 	GOOS=windows GOARCH=amd64 $(MAKE) build-windows
 
+# MCP targets
+build-darwin-arm64-mcp:
+	GOOS=darwin GOARCH=arm64 BINARY_NAME=mcp-server $(MAKE) build-mcp
+
 .PHONY: build
 build:
 	CGO_ENABLED="0" GOOS=$(GOOS) GOARCH=$(GOARCH) $(GOBUILD) -v \
@@ -51,6 +55,10 @@ build-windows:
 	CGO_ENABLED="0" GOOS=$(GOOS) GOARCH=$(GOARCH) $(GOBUILD) -v \
 		-o ${BUILD_DIR}/$(BINARY_NAME)-$(GOOS)-$(GOARCH).exe ./cmd/$(BINARY_NAME)/main.go
 
+.PHONY: build-mcp
+build-mcp:
+	CGO_ENABLED="0" GOOS=$(GOOS) GOARCH=$(GOARCH) $(GOBUILD) -v \
+		-o ${BUILD_DIR}/$(BINARY_NAME)-$(GOOS)-$(GOARCH) ./cmd/$(BINARY_NAME)/main.go
 
 .PHONY: lint
 lint: install-linter
