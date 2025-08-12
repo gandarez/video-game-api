@@ -30,6 +30,7 @@ func (c *Client) Authenticate(ctx context.Context) (string, error) {
 	url := c.baseURL + "/oauth2/token"
 
 	var b bytes.Buffer
+
 	writer := multipart.NewWriter(&b)
 
 	if err := writer.WriteField("client_id", c.clientID); err != nil {

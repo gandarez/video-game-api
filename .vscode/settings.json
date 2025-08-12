@@ -1,5 +1,7 @@
 {
     "gopls": {
         "build.buildFlags": ["-tags=integration"]
-    }
+    },
+    "gitlens.currentLine.enabled": false,
+    "gitlens.hovers.currentLine.over": "line"
 }

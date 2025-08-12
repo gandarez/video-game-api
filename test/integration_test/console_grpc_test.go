@@ -21,7 +21,7 @@ import (
 func TestConsoleSearch_Grpc(t *testing.T) {
 	grpcHost := os.Getenv("VIDEO_GAME_GRPC_HOST")
 
-	conn, err := grpc.Dial(grpcHost, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(grpcHost, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 
 	grpcClient := pbconsole.NewConsoleServiceClient(conn)
@@ -42,7 +42,7 @@ func TestConsoleSearch_Grpc(t *testing.T) {
 func TestConsoleSearch_Grpc_NotFound(t *testing.T) {
 	grpcHost := os.Getenv("VIDEO_GAME_GRPC_HOST")
 
-	conn, err := grpc.Dial(grpcHost, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(grpcHost, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 
 	grpcClient := pbconsole.NewConsoleServiceClient(conn)
@@ -64,7 +64,7 @@ func TestConsoleSearch_Grpc_NotFound(t *testing.T) {
 func TestConsoleCreate_Grpc(t *testing.T) {
 	grpcHost := os.Getenv("VIDEO_GAME_GRPC_HOST")
 
-	conn, err := grpc.Dial(grpcHost, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(grpcHost, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 
 	grpcClient := pbconsole.NewConsoleServiceClient(conn)
@@ -89,7 +89,7 @@ func TestConsoleCreate_Grpc(t *testing.T) {
 func TestConsoleCreate_Grpc_AlreadyExists(t *testing.T) {
 	grpcHost := os.Getenv("VIDEO_GAME_GRPC_HOST")
 
-	conn, err := grpc.Dial(grpcHost, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(grpcHost, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 
 	grpcClient := pbconsole.NewConsoleServiceClient(conn)
