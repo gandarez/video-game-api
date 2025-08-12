@@ -3,8 +3,6 @@ package db
 import (
 	"fmt"
 	"log/slog"
-	"os"
-	"path/filepath"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // nolint:revive
@@ -12,25 +10,11 @@ import (
 )
 
 // Run runs the database migrations.
-func Run(connString string, logger *slog.Logger) error {
+func Run(migrations string, connString string, logger *slog.Logger) error {
 	logger.Debug("starting database migrations")
 
-	wd, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get working directory: %s", err)
-	}
-
-	var path string
-
-	dockerized := os.Getenv("DOCKER")
-	if dockerized == "true" {
-		path = filepath.Join(wd, "db/migrations")
-	} else {
-		path = filepath.Join(wd, "../../", "db/migrations")
-	}
-
 	m, err := migrate.New(
-		"file://"+path,
+		"file://"+migrations,
 		connString,
 	)
 	if err != nil {

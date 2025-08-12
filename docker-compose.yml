@@ -5,7 +5,6 @@ services:
       - 17020:17020
       - 17022:17022
     environment:
-      DOCKER: "true"
       DATABASE_HOST: postgres-db
       DATABASE_PORT: 5432
       DATABASE_USER: postgres

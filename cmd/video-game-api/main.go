@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -59,8 +60,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	fpMigrations, err := filepath.Abs("./db/migrations")
+	if err != nil {
+		logger.Error("failed to get absolute path for migrations", slog.Any("error", err))
+
+		os.Exit(1)
+	}
+
 	// Run database migrations
-	if err = dbmigration.Run(db.ConnectionString, logger); err != nil {
+	if err = dbmigration.Run(fpMigrations, db.ConnectionString, logger); err != nil {
 		logger.Error(err.Error())
 
 		os.Exit(1)
