@@ -13,6 +13,7 @@ type (
 	// DatabaseQueryExecutor is the interface for executing database queries.
 	DatabaseQueryExecutor interface {
 		Exec(ctx context.Context, sql string, args ...any) (int64, error)
+		Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
 		QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
 	}
 
@@ -42,6 +43,44 @@ func (c *Console) FindByID(ctx context.Context, id string) (*entity.Console, err
 	}
 
 	return &console, nil
+}
+
+func (c *Console) FindAll(ctx context.Context, page, rows int) ([]*entity.Console, error) {
+	if page < 1 {
+		page = 1
+	}
+
+	if rows < 1 || rows > 100 {
+		rows = 100
+	}
+
+	offset := (page - 1) * rows
+
+	query := "SELECT id, name, manufacturer, release_date FROM console ORDER BY name LIMIT $1 OFFSET $2"
+
+	rowsResult, err := c.db.Query(ctx, query, rows, offset)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %w", err)
+	}
+
+	defer rowsResult.Close()
+
+	var consoles []*entity.Console
+	for rowsResult.Next() {
+		var console entity.Console
+
+		if err := rowsResult.Scan(&console.ID, &console.Name, &console.Manufacturer, &console.ReleaseDate); err != nil {
+			return nil, fmt.Errorf("failed to scan row: %w", err)
+		}
+
+		consoles = append(consoles, &console)
+	}
+
+	if err := rowsResult.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating over rows: %w", err)
+	}
+
+	return consoles, nil
 }
 
 // Save saves a console.

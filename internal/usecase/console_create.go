@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 )
 
-//go:generate mockery --name ConsoleRepositoryCreator --structname MockConsoleRepositoryCreator --inpackage --case snake
 type (
 	// ConsoleRepositoryCreator is an interface for creating a console in the repository.
 	ConsoleRepositoryCreator interface {

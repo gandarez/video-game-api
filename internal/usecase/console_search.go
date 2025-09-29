@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 )
 
-//go:generate mockery --name ConsoleRepositoryFinder --structname MockConsoleRepositoryFinder --inpackage --case snake
 type (
 	// ConsoleRepositoryFinder is an interface for finding a console from the repository.
 	ConsoleRepositoryFinder interface {

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"runtime"
 	"syscall"
 	"time"
 
@@ -107,11 +108,12 @@ func main() {
 
 	// add http routes
 	httpserver.AddRoute(handlerhttp.SearchConsoleByID(ctx, logger, db))
+	httpserver.AddRoute(handlerhttp.ListConsoles(ctx, logger, db))
 	httpserver.AddRoute(handlerhttp.CreateConsole(ctx, logger, db))
 	httpserver.AddRoute(handlerhttp.SearchGameByName(ctx, logger, igdbClient))
 
 	// Add default routes for health check
-	httpserver.AddRoute(server.ReadinessRoute())
+	httpserver.AddRoute(server.ReadinessRoute(db))
 	httpserver.AddRoute(server.LivenessRoute())
 
 	// start httpserver
@@ -153,6 +155,8 @@ func main() {
 
 	logger.Info("gRPC server listening", slog.String("addr", lis.Addr().String()))
 	logger.Info("http server started", slog.Int("port", cfg.Server.Port))
+
+	logger.Info("GOMAXPROCS", slog.Int("count", runtime.GOMAXPROCS(0)))
 
 	// wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
 	// Use a buffered channel to avoid missing signals as recommended for signal.Notify

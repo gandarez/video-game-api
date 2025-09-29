@@ -29,5 +29,6 @@ go.work
 
 # Secrets
 secrets/
+secret.yaml
 
 .DS_Store

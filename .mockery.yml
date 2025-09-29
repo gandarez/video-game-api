@@ -1,0 +1,14 @@
+dir: "{{.InterfaceDir}}"
+structname: '{{.Mock}}{{.InterfaceName}}'
+packages:
+  github.com/gandarez/video-game-api/internal/usecase:
+    interfaces:
+      ConsoleRepositoryLister:
+        config:
+          filename: "mock_console_repository_lister.go"
+      ConsoleRepositoryCreator:
+        config:
+          filename: "mock_console_repository_creator.go"
+      ConsoleRepositoryFinder:
+        config:
+          filename: "mock_console_repository_finder.go"

@@ -6,6 +6,17 @@ BUILD_DIR?="./build"
 GOCMD=go
 GOBUILD=$(GOCMD) build
 
+# images
+KIND=kindest/node:v1.33.1
+KIND_CLUSTER=video-game-cluster
+
+VERSION=1.0.0
+VIDEO_GAME_IMAGE=video-game-api:$(VERSION)
+
+# kind stuff
+NAMESPACE=video-game
+VIDEO_GAME_SERVICE=video-game-api
+
 # linting
 define get_latest_lint_release
 	curl -s "https://api.github.com/repos/golangci/golangci-lint/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
@@ -72,9 +83,9 @@ test:
 test-integration:
 	docker compose down && docker compose run --build --rm integration-test && docker compose down
 
-.PHONY: gen.go
-gen.go:
-	go generate ./...
+.PHONY: mockgen
+mockgen:
+	mockery
 
 proto:
 	protoc \
@@ -87,3 +98,67 @@ proto:
 
 create.migration:
 	migrate create -ext sql -format unix -dir db/migrations $(name)
+
+# ------------------------
+# --------- kind ---------
+# ------------------------
+
+#1
+kind-up:
+	kind create cluster \
+		--image $(KIND) \
+		--name $(KIND_CLUSTER) \
+		--config ./deployments/kind/kind-config.yaml
+	
+	kubectl wait --timeout=120s --namespace=local-path-storage --for=condition=Available deployment/local-path-provisioner
+
+kind-down:
+	kind delete cluster --name $(KIND_CLUSTER)
+
+#2
+kind-load:
+	kind load docker-image $(VIDEO_GAME_IMAGE) --name $(KIND_CLUSTER) & \
+	wait;
+
+#3..#4..#5
+kind-apply:	
+	kubectl apply -f ./deployments/app --recursive
+	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(VIDEO_GAME_SERVICE) --timeout=120s --for=condition=Ready
+
+kind-downsize-1:
+	docker update --cpuset-cpus="0" video-game-cluster-control-plane
+	docker restart video-game-cluster-control-plane
+
+# let's see GOMAXPROCS for go 1.25 in action
+# DEBUG
+# docker exec -it video-game-cluster-control-plane bash
+# run nproc inside container to check it) - it should show 12 for M2 Max processor
+# after downsizing it should show 2
+kind-downsize-2:
+	docker update --cpuset-cpus="0-1" video-game-cluster-control-plane
+	docker restart video-game-cluster-control-plane
+
+.PHONY: load-test
+load-test:
+	hey -m GET -c 10 -n 1000 "http://localhost:17020/consoles\?page\=1&rows\=10"
+
+# 	hey -m GET -c 10 -n 1000 "http://localhost:17020/consoles/0eee8295-9d2e-4c19-af43-1e5464c64eb6"
+
+.PHONY: dev-status
+dev-status:
+	watch -n 2 kubectl get pods --all-namespaces
+
+.PHONY: list-consoles
+list-consoles:
+	curl http://localhost:17020/consoles
+
+.PHONY: dev-liveness
+dev-liveness:
+	curl http://localhost:17020/liveness
+
+.PHONY: dev-readiness
+dev-readiness:
+	curl http://localhost:17020/readiness
+
+build-docker-image:
+	docker build . -t $(VIDEO_GAME_IMAGE)
