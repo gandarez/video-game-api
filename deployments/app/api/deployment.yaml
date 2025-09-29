@@ -1,0 +1,207 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: video-game
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-game-api
+  namespace: video-game
+
+spec:
+  replicas: 1
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+
+  selector:
+    matchLabels:
+      app: video-game-api
+
+  template:
+    metadata:
+      labels:
+        app: video-game-api
+
+    spec:
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      terminationGracePeriodSeconds: 5
+
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:17.5
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h database-service -p 5432 -U postgres; do
+                echo "Waiting for postgres..."
+                sleep 2
+              done
+
+      containers:
+        - name: video-game-api
+          image: video-game-api:1.0.0
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "300Mi"
+            limits:
+              cpu: "250m"
+              memory: "300Mi"
+
+          ports:
+            - name: video-game-api
+              containerPort: 17020
+
+          readinessProbe: # readiness probes mark the service available to accept traffic.
+            httpGet:
+              path: /readiness
+              port: 17020
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+
+          livenessProbe: # liveness probes mark the service alive or dead (to be restarted).
+            httpGet:
+              path: /liveness
+              port: 17020
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+
+          env:
+            - name: GOMAXPROCS
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+
+            - name: GOMEMLIMIT
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.memory
+
+            # - name: GOGC
+            #   value: "off"
+
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KUBERNETES_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KUBERNETES_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: KUBERNETES_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: video-game-api-config
+                  key: db_host
+            - name: DATABASE_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: video-game-api-config
+                  key: db_user
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: video-game-api-config
+                  key: db_password
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: video-game-api-config
+                  key: db_name
+            - name: DATABASE_SSL_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: video-game-api-config
+                  key: db_ssl_mode
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: video-game-api-config
+                  key: redis_host
+            - name: SERVICE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: video-game-api-config
+                  key: service_name
+            - name: VENDOR_IGDB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: video-game-api-config
+                  key: vendor_igdb_host
+            - name: VENDOR_TWITCH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: video-game-api-config
+                  key: vendor_twitch_host
+
+            - name: VENDOR_TWITCH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: video-game-api-secret
+                  key: twitch_client_id
+            - name: VENDOR_TWITCH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: video-game-api-secret
+                  key: twitch_client_secret
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: video-game-api
+  namespace: video-game
+
+spec:
+  selector:
+    app: video-game-api
+
+  type: ClusterIP
+
+  ports:
+    - name: video-game-api
+      port: 17020
+      targetPort: 17020
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: video-game-api-config
+  namespace: video-game
+data:
+  db_host: "database-service"
+  db_user: "postgres"
+  db_password: "postgres"
+  db_name: "postgres"
+  db_ssl_mode: "disable"
+  redis_host: "redis"
+  service_name: "video-game-api"
+  vendor_igdb_host: "https://api.igdb.com/v4"
+  vendor_twitch_host: "https://id.twitch.tv"
