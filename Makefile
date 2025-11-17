@@ -7,7 +7,7 @@ GOCMD=go
 GOBUILD=$(GOCMD) build
 
 # images
-KIND=kindest/node:v1.33.1
+KIND=kindest/node:v1.34.0
 KIND_CLUSTER=video-game-cluster
 
 VERSION=1.0.0

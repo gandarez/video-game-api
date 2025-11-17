@@ -82,10 +82,10 @@ spec:
             failureThreshold: 2
 
           env:
-            - name: GOMAXPROCS
-              valueFrom:
-                resourceFieldRef:
-                  resource: limits.cpu
+            # - name: GOMAXPROCS
+            #   valueFrom:
+            #     resourceFieldRef:
+            #       resource: limits.cpu
 
             - name: GOMEMLIMIT
               valueFrom:
