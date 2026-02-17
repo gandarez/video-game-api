@@ -1,0 +1,10 @@
+
+
+  {
+  "servers": {
+    "video-game-mcp": {
+      "type": "stdio",
+      "command": "/Users/gabriel/Git/video-game-api/build/mcp-server-darwin-arm64",
+    }
+  }
+}
